@@ -1,6 +1,7 @@
 import ollama
 import pyperclip
 import time
+import configure_agent
 
 # Init ollama client
 client = ollama.Client()
@@ -8,19 +9,16 @@ client = ollama.Client()
 # Define model
 model = 'mistral'
 
+# Define agent
+agent = configure_agent.consiseScribe
+
 # Define a function to process clipboard content and send to Ollama
 def process_clipboard():
     # Work to build prompt
-    copied_text = pyperclip.paste()
+    input_text = pyperclip.paste()
 
-    # Describe the instruction
-    instruction = "You are a scribe in a high-fantasy world, skilled in rewriting modern speech into elegant, medieval-inspired roleplay dialogue."
-    instruction += " When given a sentence, rewrite it to fit the tone of a fantasy RPG, considering the speaker's personality, setting, and level of formality."
-    instruction += " Keep it lively, with a hint of bravado or rugged charm, fitting for a traveling warrior or rogue."
-    instruction += " Make sure reponse is no longer 100 characters."
-    
-
-    prompt = f"{instruction}: {copied_text}"
+    # Generate prompt from agent
+    prompt = agent.constructPrompt(input=input_text)
 
     # Send query to the model
     response = client.generate(model=model, prompt=prompt)
@@ -32,6 +30,7 @@ def process_clipboard():
     pyperclip.copy(model_response)
 
     print("Response generated...")
+    print(model_response)
 
 # Track the previous clipboard content
 previous_clipboard_content = ""
