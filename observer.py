@@ -2,23 +2,31 @@ import ollama
 import pyperclip
 import time
 import configure_agent
-
+import components.utils
 # Init ollama client
 client = ollama.Client()
 
 # Define model
 model = 'mistral'
 
-# Define agent
-agent = configure_agent.consiseScribe
+# Import agent map
+agents = configure_agent.agents
 
+# Default agent
+defaultTag = "cs"
 # Define a function to process clipboard content and send to Ollama
 def process_clipboard():
     # Work to build prompt
     input_text = pyperclip.paste()
 
+    # extract tag from input_text
+    tag, cleanInput = components.utils.extractInputFromTag(input_text=input_text, defaulTag=defaultTag)
+
+    # Extract agent from agents map using tag
+    agent = agents[tag]
+
     # Generate prompt from agent
-    prompt = agent.constructPrompt(input=input_text)
+    prompt = agent.constructPrompt(input=cleanInput)
 
     # Send query to the model
     response = client.generate(model=model, prompt=prompt)
