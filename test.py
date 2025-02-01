@@ -1,6 +1,6 @@
 
 import ollama
-from agent import Agent
+from components.agent import Agent
 # Init ollama client
 client = ollama.Client()
 

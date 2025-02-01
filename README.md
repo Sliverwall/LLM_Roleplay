@@ -1,4 +1,4 @@
-Requires Ollama
+Requires Ollama and pyperclip
 
 Default model used is Mistral 7b parameter model, however this can be adjusted in observer.py
 
