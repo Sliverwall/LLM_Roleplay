@@ -1,4 +1,4 @@
-
+import re
 # Util function to extract input and tag from original input
 def extractInputFromTag(input_text: str, defaulTag: str):
     startTag = "<"
@@ -24,4 +24,7 @@ def extractInputFromTag(input_text: str, defaulTag: str):
             if char == startTag:
                 collectTag = True
     return tag, cleanInput
-        
+
+def remove_think_tags(text):
+    """Removes content wrapped in <think></think> tags from a given string."""
+    return re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)

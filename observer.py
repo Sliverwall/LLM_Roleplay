@@ -7,38 +7,14 @@ import components.utils
 client = ollama.Client()
 
 # Define model
-model = 'mistral'
+models = ['mistral', 'deepseek-r1:7b']
+model = models[1]
 
 # Import agent map
 agents = configure_agent.agents
 
 # Default agent
 defaultTag = "cs"
-# Define a function to process clipboard content and send to Ollama
-def process_clipboard():
-    # Work to build prompt
-    input_text = pyperclip.paste()
-
-    # extract tag from input_text
-    tag, cleanInput = components.utils.extractInputFromTag(input_text=input_text, defaulTag=defaultTag)
-
-    # Extract agent from agents map using tag
-    agent = agents[tag]
-
-    # Generate prompt from agent
-    prompt = agent.constructPrompt(input=cleanInput)
-
-    # Send query to the model
-    response = client.generate(model=model, prompt=prompt)
-
-    # Save the response from model
-    model_response = response.response
-
-    # Copy response back to the clipboard
-    pyperclip.copy(model_response)
-
-    print("Response generated...")
-    print(model_response)
 
 # Track the previous clipboard content
 previous_clipboard_content = ""
@@ -49,9 +25,24 @@ while True:
 
     # Check if clipboard content has changed
     if current_clipboard_content != previous_clipboard_content:
+        # Log statement to confirm script entered processing mode
         print("Copy event detected...")
+
+        # Work to build prompt
+        input_text = pyperclip.paste()
+
+        # extract tag from input_text
+        tag, cleanInput = components.utils.extractInputFromTag(input_text=input_text, defaulTag=defaultTag)
+
+        print("Tag used: ", tag)
+        # Use tag to hash proper agent
+        agent = agents[tag]
         # Process new clipboard content
-        process_clipboard()
+        agent.processClipboard(
+            model=model,
+            client=client,
+            cleanInput=cleanInput
+                          )
         # Update the previous clipboard content
         current_clipboard_content = pyperclip.paste()
         previous_clipboard_content = current_clipboard_content

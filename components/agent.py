@@ -2,6 +2,8 @@
 from components.persona import Persona
 from components.instruction import Instruction
 from components.constraint import Constraint
+from components.utils import remove_think_tags
+import pyperclip
 class Agent():
     '''
     Class used to store, configure, and mix various pre-made prompts to interact with local LLMS
@@ -60,3 +62,22 @@ class Agent():
 
         prompt = f"{persona} {instruction} {constraint}: {input}"
         return prompt
+    # Define a function to process clipboard content and send to Ollama
+    def processClipboard(self, client, model, cleanInput):
+        # Generate prompt from agent
+        prompt = self.constructPrompt(input=cleanInput)
+
+        # Send query to the model
+        response = client.generate(model=model, prompt=prompt)
+
+        # Save the response from model
+        model_response = response.response
+
+        # If using COT model, remove think tags
+        if model == 'deepseek-r1:7b':
+            model_response = remove_think_tags(model_response)
+        # Copy response back to the clipboard
+        pyperclip.copy(model_response)
+
+        print("Response generated...")
+        print(model_response)

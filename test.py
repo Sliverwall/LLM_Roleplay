@@ -31,13 +31,15 @@ constraints = ["length",
             "violence",
             "mysticism",
             "humor"]
-
+# temp vector
 temps = [1, 1, 0]
+# Construct agent using component lists
 agent = Agent(persona=personas[0],
               instruction=instructions[2],
               constraint=constraints[0],
               temps=temps)
 
+# Generate prompt based on agent config
 prompt = agent.constructPrompt(input=copied_text)
 
 # Send query to the model
